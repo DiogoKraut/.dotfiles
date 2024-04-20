@@ -1,0 +1,13 @@
+/*
+!.gitignore
+!.vimrc
+!.bashrc
+!.vim/
+!.config/
+.config/*
+!.config/lvim/
+!.config/nvim/
+!.config/lazygit/
+!.tmux.conf
+!.oh-my-zsh
+!.zshrc
