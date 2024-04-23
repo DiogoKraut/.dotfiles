@@ -1,41 +1,25 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
-PROJECTS="$HOME/AOA"
-
-increase() {
-    selected="$1"
-    if [ "$selected" = "default" ]
-    then
-        return 0
-    fi
-    zoxide add "$PROJECTS/$selected"
-}
-
-search() {
-    find "$PROJECTS" -maxdepth 1 -type d -printf "%f\n" | \
-    while read -r line; do
-        echo "$line" "$(zoxide query -s "$line")"
-    done | sort -rnk2 | cut -d' ' -f1 | fzf-tmux
-}
-
-if [ "$#" -eq 1 ]
-then
-    selected="$1"
+if [[ $# -eq 1 ]]; then
+    selected=$1
 else
-    selected=$(search)
+    selected=$(find ~/AOA -mindepth 1 -maxdepth 1 -type d | fzf)
 fi
 
-if [ -z "$selected" ]
-then
-    exit 1
+if [[ -z $selected ]]; then
+    exit 0
 fi
 
-selected=$(echo "$selected" | tr '.' '_')
+selected_name=$(basename "$selected" | tr . _)
+tmux_running=$(pgrep tmux)
 
-if ! tmux has-session -t "$selected" 2>/dev/null
-then
-    tmux new-session -d -s "$selected"
+if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
+    tmux new-session -s $selected_name -c $selected
+    exit 0
 fi
 
-increase "$selected"
-tmux switch-client -t "$selected"
+if ! tmux has-session -t=$selected_name 2> /dev/null; then
+    tmux new-session -ds $selected_name -c $selected
+fi
+
+tmux switch-client -t $selected_name

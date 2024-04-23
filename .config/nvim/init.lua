@@ -27,6 +27,9 @@ vim.opt.shiftwidth = 4
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
+-- Ctrl + s to save file
+vim.api.nvim_set_keymap("n", "<C-s>", ":w<CR>", { noremap = true, silent = true })
+
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`

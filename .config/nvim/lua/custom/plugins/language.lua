@@ -149,7 +149,9 @@ return {
             --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
             local capabilities = vim.lsp.protocol.make_client_capabilities()
             capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
-
+            -- require("lspconfig")["pylsp"].setup({
+            --     capabilities = capabilities,
+            -- })
             -- Enable the following language servers
             --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
             --
@@ -172,7 +174,27 @@ return {
                 -- But for many setups, the LSP (`tsserver`) will work just fine
                 -- tsserver = {},
                 --
-
+                jedi_language_server = {
+                    -- cmd = {...},
+                    -- filetypes = { ...},
+                    -- capabilities = {},
+                    settings = {
+                        jedi = {
+                            completion = {
+                                callSnippet = "Replace",
+                            },
+                            diagnostics = {
+                                enable = true,
+                                didOpen = true,
+                                didSave = true,
+                                didChange = true,
+                            },
+                            codeActions = {
+                                enabled = true,
+                            },
+                        },
+                    },
+                },
                 lua_ls = {
                     -- cmd = {...},
                     -- filetypes = { ...},
@@ -202,6 +224,12 @@ return {
             local ensure_installed = vim.tbl_keys(servers or {})
             vim.list_extend(ensure_installed, {
                 "stylua", -- Used to format Lua code
+                "tsserver", -- Used for TypeScript
+                "eslint", -- Used for JavaScript
+                "prettier", -- Used for JavaScript
+                "prettierd", -- Used for JSON
+                "flake8", -- Used for Python
+                "isort", -- Used for Python
             })
             require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -251,6 +279,7 @@ return {
                 -- You can use a sub-list to tell conform to run *until* a formatter
                 -- is found.
                 javascript = { { "prettierd", "prettier" } },
+                json = { { "prettierd", "prettier" } },
             },
         },
     },
@@ -286,7 +315,46 @@ return {
             -- Adds other completion capabilities.
             --  nvim-cmp does not ship with all sources by default. They are split
             --  into multiple repos for maintenance purposes.
-            "hrsh7th/cmp-nvim-lsp",
+            {
+                "hrsh7th/cmp-nvim-lsp",
+                event = "InsertEnter",
+                dependencies = {
+                    "L3MON4D3/LuaSnip", -- Snippet engine
+                    "saadparwaiz1/cmp_luasnip", -- Snippet completion source
+                    "hrsh7th/cmp-nvim-lsp", -- LSP completion source
+                    "hrsh7th/cmp-buffer", -- Buffer completion source
+                    "hrsh7th/cmp-path", -- Path completion source
+                },
+                config = function()
+                    local cmp = require("cmp")
+                    local luasnip = require("luasnip")
+
+                    cmp.setup({
+                        snippet = {
+                            expand = function(args) luasnip.lsp_expand(args.body) end,
+                        },
+                        mapping = cmp.mapping.preset.insert({
+                            ["<C-d>"] = cmp.mapping.scroll_docs(-4),
+                            ["<C-f>"] = cmp.mapping.scroll_docs(4),
+                            ["<C-Space>"] = cmp.mapping.complete(),
+                            ["<C-y>"] = cmp.mapping.confirm({ select = true }), -- Accept the currently selected item
+                            ["<C-e>"] = cmp.mapping.abort(),
+                        }),
+                        sources = cmp.config.sources({
+                            { name = "nvim_lsp" },
+                            { name = "luasnip" },
+                            { name = "buffer" },
+                            { name = "path" },
+                        }),
+                    })
+
+                    -- Setup lspconfig with capabilities enhanced by cmp_nvim_lsp
+                    local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+                    -- Now we need to make sure each LSP is set up with these capabilities
+                    -- This requires that your LSP setups are done after this configuration is loaded
+                end,
+            },
             "hrsh7th/cmp-path",
         },
         config = function()
