@@ -136,3 +136,10 @@ alias dotfiles="/usr/bin/git --git-dir=$HOME/.dotfiles.git/ --work-tree=$HOME"
 export PATH="$PATH:/usr/local/go/bin"
 export PATH="$PATH:$HOME/bin"
 export PATH="$PATH:$HOME/local/bin"
+export XDG_CONFIG_HOME="$HOME/.config"
+export PATH="$PATH:$HOME/go/bin"
+# tmux -v
+[[ $- == *i* ]] && [[ -z "${TMUX}" ]] && { tmux new-session -A -s default }
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
