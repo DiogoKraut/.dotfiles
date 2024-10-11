@@ -17,7 +17,10 @@ vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 vim.opt.relativenumber = true
-vim.o.statuscolumn = "%s %l %r"
+vim.o.statuscolumn = "%s %l %r "
+vim.api.nvim_set_hl(0, "LineNrAbove", { fg = "#e6e9ef", bold = true })
+vim.api.nvim_set_hl(0, "LineNr", { fg = "#04a5e5", bold = true })
+vim.api.nvim_set_hl(0, "LineNrBelow", { fg = "#e6e9ef", bold = true })
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = "a"
@@ -176,9 +179,69 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
     "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
+    {
+        "chentoast/marks.nvim",
+        event = "VeryLazy",
+        opts = {},
+    },
     { "numToStr/Comment.nvim", opts = {} },
     { "f-person/git-blame.nvim", opts = {} },
     { "mbbill/undotree", config = function() vim.keymap.set("n", "<leader>u", ":UndotreeToggle<CR>", { desc = "Toggle [U]ndo tree" }) end },
+    {
+        "shortcuts/no-neck-pain.nvim",
+        version = "*",
+        opts = {
+            width = 190,
+            buffers = { right = { enabled = false } },
+            autocmds = {
+                -- When `true`, enables the plugin when you start Neovim.
+                -- If the main window is  a side tree (e.g. NvimTree) or a dashboard, the command is delayed until it finds a valid window.
+                -- The command is cleaned once it has successfuly ran once.
+                --- @type boolean
+                enableOnVimEnter = true,
+                -- When `true`, enables the plugin when you enter a new Tab.
+                -- note: it does not trigger if you come back to an existing tab, to prevent unwanted interfer with user's decisions.
+                --- @type boolean
+                enableOnTabEnter = false,
+                -- When `true`, reloads the plugin configuration after a colorscheme change.
+                --- @type boolean
+                reloadOnColorSchemeChange = false,
+                -- When `true`, entering one of no-neck-pain side buffer will automatically skip it and go to the next available buffer.
+                --- @type boolean
+                skipEnteringNoNeckPainBuffer = false,
+            },
+
+            mappings = {
+                -- When `true`, creates all the mappings that are not set to `false`.
+                --- @type boolean
+                enabled = false,
+                -- Sets a global mapping to Neovim, which allows you to toggle the plugin.
+                -- When `false`, the mapping is not created.
+                --- @type string
+                toggle = "<Leader>np",
+                -- Sets a global mapping to Neovim, which allows you to toggle the left side buffer.
+                -- When `false`, the mapping is not created.
+                --- @type string
+                toggleLeftSide = "<Leader>nql",
+                -- Sets a global mapping to Neovim, which allows you to toggle the right side buffer.
+                -- When `false`, the mapping is not created.
+                --- @type string
+                toggleRightSide = "<Leader>nqr",
+                -- Sets a global mapping to Neovim, which allows you to increase the width (+5) of the main window.
+                -- When `false`, the mapping is not created.
+                --- @type string | { mapping: string, value: number }
+                widthUp = "<Leader>n=",
+                -- Sets a global mapping to Neovim, which allows you to decrease the width (-5) of the main window.
+                -- When `false`, the mapping is not created.
+                --- @type string | { mapping: string, value: number }
+                widthDown = "<Leader>n-",
+                -- Sets a global mapping to Neovim, which allows you to toggle the scratchPad feature.
+                -- When `false`, the mapping is not created.
+                --- @type string
+                scratchPad = "<Leader>ns",
+            },
+        },
+    },
     { -- Adds git related signs to the gutter, as well as utilities for managing changes
         "lewis6991/gitsigns.nvim",
         opts = {
@@ -188,6 +251,20 @@ require("lazy").setup({
                 delete = { text = "_" },
                 topdelete = { text = "‾" },
                 changedelete = { text = "~" },
+            },
+        },
+    },
+    {
+        "m4xshen/hardtime.nvim",
+        dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
+        opts = {
+            disable_mouse = false,
+            max_count = 7,
+            disabled_keys = {
+                ["<Up>"] = { "" },
+                ["<Down>"] = { "" },
+                ["<Left>"] = { "" },
+                ["<Right>"] = { "" },
             },
         },
     },

@@ -143,3 +143,6 @@ export PATH="$PATH:$HOME/go/bin"
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
+
+alias exp="/mnt/c/Windows/explorer.exe ."
+export PATH="$PATH:/mnt/c/Users/diogo/AppData/Local/Programs/Microsoft\ VS\ Code/bin/"

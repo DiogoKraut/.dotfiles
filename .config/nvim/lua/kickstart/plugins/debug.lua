@@ -14,6 +14,8 @@ return {
         "williamboman/mason.nvim",
         "jay-babu/mason-nvim-dap.nvim",
         "leoluz/nvim-dap-go",
+        "mxsdev/nvim-dap-vscode-js",
+        { "microsoft/vscode-js-debug", build = "npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out" },
         { "mfussenegger/nvim-dap-python", ft = "python" },
     },
     config = function()
@@ -34,7 +36,9 @@ return {
             ensure_installed = {
                 -- Update this to ensure that you have the debuggers for the langs you want
                 "debugpy",
+                "js-debug-adapter",
             },
+            automatic_installation = true,
         })
 
         -- Basic debugging keymaps, feel free to change to your liking!
@@ -78,6 +82,11 @@ return {
         -- Install golang specific config
         require("dap-go").setup()
         require("dap-python").setup() -- Debug with default settings.
-        require("dap.ext.vscode").load_launchjs()
+        require("dap-vscode-js").setup({
+            debugger_path = os.getenv("HOME") .. "/.local/share/nvim/lazy/vscode-js-debug",
+            adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
+        })
+
+        -- require("dap.ext.vscode").load_launchjs()
     end,
 }

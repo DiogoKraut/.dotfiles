@@ -93,8 +93,6 @@ return {
             local ensure_installed = vim.tbl_keys(servers or {})
             vim.list_extend(ensure_installed, {
                 "stylua", -- Used to format Lua code
-                "prettier", -- Used for JavaScript
-                "prettierd", -- Used for JSON
                 "flake8", -- Used for Python
                 "isort", -- Used for Python
             })
@@ -111,17 +109,19 @@ return {
             })
         end,
     },
-    {
-        "pmizio/typescript-tools.nvim",
-        dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
-        opts = {
-            tsserver_file_preferences = {
-                includeInlayParameterNameHints = "all",
-                includeCompletionsForModuleExports = true,
-                format_on_save = false,
-            },
-        },
-    },
+
+    -- {
+    --     "pmizio/typescript-tools.nvim",
+    --     dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    --     opts = {
+    --         tsserver_file_preferences = {
+    --             includeInlayParameterNameHints = "all",
+    --             includeCompletionsForModuleExports = true,
+    --             format_on_save = false,
+    --         },
+    --     },
+    -- },
+
     { -- Autoformat
         "stevearc/conform.nvim",
         lazy = false,
@@ -137,9 +137,9 @@ return {
             notify_on_error = true,
             format_on_save = function(bufnr)
                 local disable_filetypes =
-                    { c = true, cpp = true, typescript = true, javascript = true, python = true, typescriptreact = true, javascriptreact = true }
+                    { c = true, cpp = true, typescript = false, javascript = false, python = false, typescriptreact = false, javascriptreact = false }
                 return {
-                    timeout_ms = 500,
+                    timeout_ms = 2000,
                     lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
                 }
             end,
@@ -147,8 +147,9 @@ return {
                 lua = { "stylua" },
                 python = { "isort", "black" },
                 json = { { "prettierd", "prettier" } },
-                javascript = { { "eslint_d" } },
-                -- typescript = { { "prettierd", "prettier" } },
+                javascript = { { "prettierd", "prettier" } },
+                markdown = { { "markdownlint" } },
+                typescript = { { "prettierd", "prettier" } },
             },
         },
     },
