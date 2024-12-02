@@ -1,17 +1,16 @@
-# /*
-# !.gitignore
-# !.vimrc
-# !.bashrc
-# !.vim/
-# !.config/
-# .config/*
-# !.config/lvim/
-# !.config/nvim/
-# !.config/lazygit/
-# !.config/tmux/
-# !.tmux.conf
-# !tmux.conf
-# !.oh-my-zsh
-# !.zshrc
-# !./bin/
-# !.tmux
+/*
+!.asdf
+!.gitignore
+!.vimrc
+!.bashrc
+!.vim/
+!.config/lvim/
+!.config/nvim/
+!.config/lazygit/
+!.config/tmux/
+!.tmux.conf
+!tmux.conf
+!.oh-my-zsh
+!.zshrc
+!./bin/
+!.tmux

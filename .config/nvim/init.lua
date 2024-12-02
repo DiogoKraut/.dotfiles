@@ -18,6 +18,7 @@ vim.opt.number = true
 --  Experiment for yourself to see if you like it!
 vim.opt.relativenumber = true
 vim.o.statuscolumn = "%s %l %r "
+
 vim.api.nvim_set_hl(0, "LineNrAbove", { fg = "#e6e9ef", bold = true })
 vim.api.nvim_set_hl(0, "LineNr", { fg = "#04a5e5", bold = true })
 vim.api.nvim_set_hl(0, "LineNrBelow", { fg = "#e6e9ef", bold = true })
