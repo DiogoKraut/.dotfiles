@@ -19,6 +19,12 @@ pyenv install 3.11
 pyenv global 3.11
 ```
 
+## Node
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+nvm install --lts
+```
+
 ## Github ssh key (or use existing)
 ```bash
 ssh-keygen -t ed25519 -C "your_email@example.com"
@@ -56,3 +62,14 @@ We want the latest version of Tmux, which means compiling from source.
    sh autogen.sh
    ./configure && make
    ```
+4. Make sure TPM is correctly cloned into ~/.tmux/plugins/tpm
+   - https://github.com/tmux-plugins/tpm
+5. `prefix + I` to make sure plugins are installed
+
+## NeoVim
+```bash
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+sudo rm -rf /opt/nvim
+sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+```
+Make sure to check if the opt path is added to .zshrc
