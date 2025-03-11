@@ -24,6 +24,10 @@ pyenv global 3.11
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 nvm install --lts
 ```
+## Utils
+```bash
+sudo apt install zoxide fzf ripgrep fd-find
+```
 
 ## Github ssh key (or use existing)
 ```bash
