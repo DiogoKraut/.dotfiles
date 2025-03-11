@@ -37,6 +37,7 @@ return {
                 -- Update this to ensure that you have the debuggers for the langs you want
                 "debugpy",
                 "js-debug-adapter",
+                "delve",
             },
             automatic_installation = true,
         })
@@ -86,6 +87,42 @@ return {
             debugger_path = os.getenv("HOME") .. "/.local/share/nvim/lazy/vscode-js-debug",
             adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
         })
+        for _, language in ipairs({ "typescript", "javascript" }) do
+            dap.configurations[language] = {
+                {
+                    type = "pwa-node",
+                    request = "launch",
+                    name = "Launch file",
+                    program = "${workspaceFolder}/src/main.ts",
+                    cwd = "${workspaceFolder}",
+                },
+                {
+                    type = "pwa-node",
+                    request = "attach",
+                    name = "Attach",
+                    address = "localhost",
+                    port = 5432,
+                    cwd = "${workspaceFolder}",
+                    restart = true,
+                },
+                {
+                    type = "pwa-node",
+                    request = "attach",
+                    name = "pick",
+                    processId = require("dap.utils").pick_process,
+                    cwd = "${workspaceFolder}",
+                },
+                {
+                    type = "pwa-node",
+                    request = "attach",
+                    name = "Attach to Node app",
+                    address = "localhost",
+                    port = 3012,
+                    cwd = "${workspaceFolder}",
+                    restart = true,
+                },
+            }
+        end
 
         -- require("dap.ext.vscode").load_launchjs()
     end,

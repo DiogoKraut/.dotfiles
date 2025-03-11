@@ -146,3 +146,14 @@ eval "$(pyenv init -)"
 
 alias exp="/mnt/c/Windows/explorer.exe ."
 export PATH="$PATH:/mnt/c/Users/diogo/AppData/Local/Programs/Microsoft\ VS\ Code/bin/"
+
+#asdf
+. "$HOME/.asdf/asdf.sh"
+# append completions to fpath
+fpath=(${ASDF_DIR}/completions $fpath)
+# initialise completions with ZSH's compinit
+autoload -Uz compinit && compinit
+. ~/.asdf/plugins/golang/set-env.zsh
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/bin/terraform terraform

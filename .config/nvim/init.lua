@@ -98,6 +98,7 @@ vim.keymap.set("n", "n", "nzzzv", { silent = true })
 vim.keymap.set("n", "N", "Nzzzv", { silent = true })
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { silent = true })
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { silent = true })
+vim.keymap.set("n", "G", "Gzz", { silent = true })
 
 vim.keymap.set("x", "<leader>p", [["_dP]])
 
@@ -193,7 +194,7 @@ require("lazy").setup({
         version = "*",
         opts = {
             width = 190,
-            buffers = { right = { enabled = false } },
+            buffers = { right = { enabled = false }, left = { enabled = false } },
             autocmds = {
                 -- When `true`, enables the plugin when you start Neovim.
                 -- If the main window is  a side tree (e.g. NvimTree) or a dashboard, the command is delayed until it finds a valid window.
@@ -434,6 +435,7 @@ require("lazy").setup({
     },
     { -- Highlight, edit, and navigate code
         "nvim-treesitter/nvim-treesitter",
+        depends = { "nvim-treesitter/nvim-treesitter-context" },
         build = ":TSUpdate",
         opts = {
             ensure_installed = {
@@ -459,6 +461,7 @@ require("lazy").setup({
                 additional_vim_regex_highlighting = { "ruby" },
             },
             indent = { enable = true, disable = { "ruby" } },
+            context = { enable = true },
         },
         config = function(_, opts)
             -- [[ Configure Treesitter ]] See `:help nvim-treesitter`

@@ -95,6 +95,8 @@ return {
                 "stylua", -- Used to format Lua code
                 "flake8", -- Used for Python
                 "isort", -- Used for Python
+                "gopls",
+                "delve",
             })
             require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -150,6 +152,7 @@ return {
                 -- javascript = { { "prettierd", "prettier" } },
                 markdown = { { "markdownlint" } },
                 -- typescript = { { "prettierd", "prettier" } },
+                go = { "gofmt", "goimports" },
             },
         },
     },
