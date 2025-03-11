@@ -10,6 +10,14 @@ sudo apt upgrade
 ```bash
 sudo apt install cmake make gcc libssl-dev
 ```
+## Python (pyenv)
+```bash
+curl -fsSL https://pyenv.run | bash
+```
+```bash
+pyenv install 3.11
+pyenv global 3.11
+```
 
 ## Github ssh key (or use existing)
 ```bash
