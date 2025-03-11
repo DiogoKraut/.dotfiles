@@ -9,6 +9,7 @@
 !.config/lazygit/
 !.config/tmux/
 !.tmux.conf
+!.tmux.conf/themes/agnoster.zsh-theme
 !tmux.conf
 !.oh-my-zsh
 !.zshrc
