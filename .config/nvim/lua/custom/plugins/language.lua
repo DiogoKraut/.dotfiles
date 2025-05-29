@@ -138,6 +138,7 @@ return {
         opts = {
             notify_on_error = true,
             format_on_save = function(bufnr)
+                if vim.g.disable_format_on_save then return false end
                 local disable_filetypes =
                     { c = true, cpp = true, typescript = false, javascript = false, python = false, typescriptreact = false, javascriptreact = false }
                 return {

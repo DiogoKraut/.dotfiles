@@ -1,0 +1,8 @@
+LAST_EPOCH=20157
+EXIT_STATUS=1
+ERROR='error: Your local changes to the following files would be overwritten by merge:
+	themes/agnoster.zsh-theme
+	themes/essembeh.zsh-theme
+Please commit your changes or stash them before you merge.
+Aborting
+There was an error updating. Try again later?'

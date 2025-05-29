@@ -85,6 +85,15 @@ vim.opt.scrolloff = 20
 vim.opt.hlsearch = true
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 
+vim.keymap.set("n", "<leader>tf", function()
+    vim.g.disable_format_on_save = not vim.g.disable_format_on_save
+    if vim.g.disable_format_on_save then
+        vim.notify("Conform format on save: OFF")
+    else
+        vim.notify("Conform format on save: ON")
+    end
+end, { desc = "[T]oggle [F]ormat on save (Conform)" })
+
 -- Diagnostic keymaps
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
