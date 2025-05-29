@@ -18,7 +18,14 @@ curl -fsSL https://pyenv.run | bash
 pyenv install 3.11
 pyenv global 3.11
 ```
-
+## Node
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+```
+```bash
+nvm install node
+```
+```bash
 ## Github ssh key (or use existing)
 ```bash
 ssh-keygen -t ed25519 -C "your_email@example.com"
