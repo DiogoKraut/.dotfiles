@@ -1,4 +1,8 @@
 # Prerequisites
+## Browser
+`https://www.mozilla.org/pt-BR/firefox/new/`
+Set up profiles:
+`about:profiles`
 ## Update/Upgrade
 ```bash
 sudo apt update
