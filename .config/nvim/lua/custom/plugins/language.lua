@@ -97,6 +97,17 @@ return {
                 "isort", -- Used for Python
                 "gopls",
                 "delve",
+                "csharp_ls",
+                "prettierd",
+                "prettier",
+                "goimports",
+                "lua_ls",
+                "markdown_oxide",
+                "pyright",
+                "pylsp",
+                "terraformls",
+                "tflint",
+                "tsserver",
             })
             require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
