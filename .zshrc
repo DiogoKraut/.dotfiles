@@ -123,7 +123,7 @@ gpush() {
 awslogin() {
   aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 236579017311.dkr.ecr.us-east-2.amazonaws.com
 }
-
+export BROWSER='/mnt/c/Program Files/Mozilla Firefox/firefox.exe'
 alias dif="cat > ~/AOA/1.json && cat > ~/AOA/2.json && diff -y ~/AOA/1.json ~/AOA/2.json"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -162,3 +162,107 @@ complete -o nospace -C /usr/bin/terraform terraform
 export PATH="$PATH:/mnt/c/Program Files/WindowsApps/MicrosoftCorporationII.WindowsSubsystemForLinux_2.5.7.0_x64__8wekyb3d8bbwe:/mnt/c/Program Files (x86)/NVIDIA Corporation/PhysX/Common:/mnt/c/Program Files/Eclipse Adoptium/jre-17.0.12.7-hotspot/bin:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files/dotnet/:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/Program Files (x86)/dotnet/:/mnt/c/Program Files/Docker/Docker/resources/bin:/mnt/c/Program Files/WireGuard/:/mnt/c/Program Files/Git/cmd:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/nodejs/:/mnt/c/Program Files/LLVM/bin:/mnt/c/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/:/mnt/c/Program Files/NVIDIA Corporation/NVIDIA app/NvDLISR:/mnt/c/Program Files/PowerShell/7/:/mnt/c/Users/diogo/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/diogo/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Program Files/JetBrains/DataGrip 2024.2.2/bin:/mnt/c/Users/diogo/.dotnet/tools:/mnt/c/Program Files/Neovim/bin:/mnt/c/MinGW/bin:/mnt/c/Users/diogo/AppData/Roaming/npm:/snap/bin"
 
 alias c="code --remote wsl+ubuntu $(pwd)"
+
+# --- AWS SSO quick login + profile switch ---
+awsso() {
+    if [ -z "$1" ]; then
+        echo "Usage: awsso <profile> [--force]"
+        return 1
+    fi
+    local profile="$1"; shift
+    local force=0
+    [ "$1" = "--force" ] && force=1
+
+    # Clear any static creds that could mask SSO
+    unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+
+    # Is the profile currently usable?
+    _awsso_is_valid() {
+        AWS_PROFILE="$profile" AWS_SDK_LOAD_CONFIG=1 \
+          aws sts get-caller-identity >/dev/null 2>&1
+    }
+
+    # Reuse valid session unless forced
+    if [ $force -eq 0 ] && _awsso_is_valid; then
+        export AWS_PROFILE="$profile"
+        export AWS_DEFAULT_REGION="$(aws configure get region --profile "$profile" 2>/dev/null)"
+        echo "✅ Reusing existing SSO session for '$profile' (${AWS_DEFAULT_REGION:-no region})."
+    else
+        echo "🔐 Logging in to AWS SSO profile: $profile ..."
+        if ! aws sso login --profile "$profile"; then
+            echo "❌ Failed to log in to profile: $profile"
+            return 1
+        fi
+        export AWS_PROFILE="$profile"
+        export AWS_DEFAULT_REGION="$(aws configure get region --profile "$profile" 2>/dev/null)"
+        echo "✅ Logged in and set AWS_PROFILE='$AWS_PROFILE' ${AWS_DEFAULT_REGION:+AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION}"
+    fi
+
+    # Show ready-to-copy env exports (Linux format)
+    if command -v aws >/dev/null; then
+      echo "✅ AWS_PROFILE set to '$AWS_PROFILE' (${AWS_DEFAULT_REGION:-no region})"
+      echo
+      echo "🔧 Temporary credentials (env format):"
+      aws configure export-credentials --profile "$profile" --format env-no-export
+      echo
+      echo "🔧 Temporary credentials (json format):"
+      aws configure export-credentials --profile "$profile" --format env-no-export | jq -Rn '
+          reduce inputs as $line ({}; 
+            ($line | capture("(?<k>[^=]+)=(?<v>.*)")) as $kv
+            | .[$kv.k] = ($kv.v | sub("^\"";"") | sub("\"$";""))
+          )'
+    fi
+}
+# --- End / clear an AWS SSO session ---
+awsoff() {
+    local profile="${1:-$AWS_PROFILE}"
+
+    if [ -z "$profile" ]; then
+        echo "Usage: awsoff <profile>"
+        echo "or: awsoff (to clear current AWS_PROFILE)"
+        return 1
+    fi
+
+    echo "🔓 Logging out of AWS SSO profile: $profile ..."
+
+    # Global AWS SSO logout (revokes cached tokens)
+    aws sso logout --profile "$profile" 2>/dev/null || aws sso logout 2>/dev/null
+
+    # Delete cached SSO files for this profile (optional but safe)
+    local cache_dir="$HOME/.aws/sso/cache"
+    if [ -d "$cache_dir" ]; then
+        find "$cache_dir" -type f -name '*.json' -delete 2>/dev/null
+        echo "🧹 Cleared cached SSO tokens in $cache_dir"
+    fi
+
+    # Unset environment vars so shell no longer points to the old session
+    unset AWS_PROFILE AWS_DEFAULT_REGION AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+    echo "✅ AWS environment cleared."
+}
+
+
+# --- Tab completion. Uses `aws configure list-profiles` ---
+_awsso_complete() {
+    local cur opts
+    cur="${COMP_WORDS[COMP_CWORD]:-${words[CURRENT]}}"
+    if command -v aws >/dev/null 2>&1; then
+        opts="$(aws configure list-profiles 2>/dev/null)"
+    else
+        opts=""
+    fi
+    if [ -n "$BASH_VERSION" ]; then
+        COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
+    elif [ -n "$ZSH_VERSION" ]; then
+        compadd -- ${(f)opts}
+    fi
+}
+
+# Enable the completion
+if [ -n "$BASH_VERSION" ]; then
+    complete -F _awsso_complete awsso
+elif [ -n "$ZSH_VERSION" ]; then
+    autoload -U +X bashcompinit && bashcompinit
+    compdef _awsso_complete awsso
+fi
+# --- End AWS SSO quick login + profile switch ---
+
