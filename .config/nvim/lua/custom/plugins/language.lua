@@ -16,6 +16,34 @@ return {
         },
     },
     {
+        "norcalli/nvim-colorizer.lua",
+        ft = { "html", "tsx", "js", "ts", "javascript", "typescript", "typescriptreact", "css" },
+        config = function()
+            -- norcalli/nvim-colorizer.lua API
+            -- Configure all filetypes to highlight every common color format
+            require("colorizer").setup({
+                "html",
+                "tsx",
+                "js",
+                "ts",
+                "javascript",
+                "typescript",
+                "typescriptreact",
+                "css",
+            }, {
+                RGB = true, -- #RGB
+                RRGGBB = true, -- #RRGGBB
+                names = true, -- Named colors like "Blue"
+                RRGGBBAA = true, -- #RRGGBBAA
+                rgb_fn = true, -- rgb(), rgba()
+                hsl_fn = true, -- hsl(), hsla()
+                css = true, -- Enable all CSS features: rgb_fn, hsl_fn, names, etc.
+                css_fn = true, -- Enable all CSS functions
+                mode = "background", -- or "foreground"
+            })
+        end,
+    },
+    {
         "j-hui/fidget.nvim",
         opts = {},
     },
@@ -88,6 +116,19 @@ return {
                         },
                     },
                 },
+                yamlls = {
+                    settings = {
+                        yaml = {
+                            schemas = {
+                                ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+                                ["https://json.schemastore.org/github-action.json"] = "/action.{yml,yaml}",
+                                ["https://json.schemastore.org/docker-compose.json"] = "docker-compose*.{yml,yaml}",
+                                ["https://json.schemastore.org/kustomization.json"] = "kustomization.{yml,yaml}",
+                                ["https://json.schemastore.org/chart.json"] = "Chart.{yml,yaml}",
+                            },
+                        },
+                    },
+                },
             }
             require("mason").setup()
             local ensure_installed = vim.tbl_keys(servers or {})
@@ -108,6 +149,7 @@ return {
                 "terraformls",
                 "tflint",
                 "tsserver",
+                "yaml-language-server", -- YAML LSP
             })
             require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -165,6 +207,7 @@ return {
                 markdown = { { "markdownlint" } },
                 -- typescript = { { "prettierd", "prettier" } },
                 go = { "gofmt", "goimports" },
+                yml = { "prettierd" },
             },
         },
     },
